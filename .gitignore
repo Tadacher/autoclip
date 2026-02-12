@@ -11,7 +11,7 @@ __pycache__/
 *.pyd
 .Python
 *.so
-
+.env
 # 虚拟环境
 venv/
 env/
@@ -93,3 +93,11 @@ dump.rdb
 # 临时文件
 *.tmp
 *.temp
+
+# frontend/.gitignore или в корневом .gitignore
+/frontend/.env
+/frontend/.env.local
+/frontend/dist/
+/frontend/build/
+/frontend/.cache/
+/frontend/node_modules/
