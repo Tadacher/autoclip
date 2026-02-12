@@ -1,7 +1,3 @@
-"""
-数据库配置
-包含数据库连接、会话管理和依赖注入
-"""
 
 import os
 from sqlalchemy import create_engine
@@ -10,24 +6,19 @@ from sqlalchemy.pool import StaticPool
 from typing import Generator
 from backend.models.base import Base
 
-# 数据库配置
 DATABASE_URL = os.getenv(
     "DATABASE_URL", 
     "sqlite:///autoclip.db"
 )
 
-# 如果没有设置环境变量，使用配置函数获取数据库URL
 if DATABASE_URL == "sqlite:///autoclip.db":
     try:
         from .config import get_database_url
         DATABASE_URL = get_database_url()
     except ImportError:
-        # 如果导入失败，保持默认值
         pass
 
-# 创建数据库引擎
 if "sqlite" in DATABASE_URL:
-    # SQLite配置
     engine = create_engine(
         DATABASE_URL,
         connect_args={
@@ -36,10 +27,9 @@ if "sqlite" in DATABASE_URL:
         },
         poolclass=StaticPool,
         pool_pre_ping=True,
-        echo=False  # 设置为True可以看到SQL语句
+        echo=False
     )
 else:
-    # PostgreSQL配置
     engine = create_engine(
         DATABASE_URL,
         pool_pre_ping=True,
@@ -47,7 +37,6 @@ else:
         echo=False
     )
 
-# 创建会话工厂
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
@@ -55,10 +44,7 @@ SessionLocal = sessionmaker(
 )
 
 def get_db() -> Generator[Session, None, None]:
-    """
-    数据库会话依赖注入
-    用于FastAPI的依赖注入系统
-    """
+
     db = SessionLocal()
     try:
         yield db
@@ -66,49 +52,40 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 def create_tables():
-    """创建所有数据库表"""
     Base.metadata.create_all(bind=engine)
 
 def drop_tables():
-    """删除所有数据库表"""
     Base.metadata.drop_all(bind=engine)
 
 def reset_database():
-    """重置数据库"""
     drop_tables()
     create_tables()
 
 from sqlalchemy import text
 
 def test_connection() -> bool:
-    """测试数据库连接"""
     try:
         with engine.connect() as conn:
             conn.execute(text("SELECT 1")).fetchone()
         return True
     except Exception as e:
-        print(f"数据库连接测试失败: {e}")
+        print(f"Ошибка: {e}")
         return False
 
-# 数据库初始化
 def init_database():
-    """初始化数据库"""
-    print("正在初始化数据库...")
+    print("Инициализация датабазы...")
     
-    # 测试连接
     if not test_connection():
-        print("❌ 数据库连接失败")
+        print("cnn test failed")
         return False
-    
-    # 创建表
+
     try:
         create_tables()
-        print("✅ 数据库表创建成功")
+        print("✅ Таблицы базы данных успешно созданы")
         return True
     except Exception as e:
-        print(f"❌ 数据库表创建失败: {e}")
+        print(f"❌ Не удалось создать таблицы базы данных: {e}")
         return False
 
 if __name__ == "__main__":
-    # 直接运行此文件时初始化数据库
     init_database()

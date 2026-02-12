@@ -14,7 +14,6 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 class ProviderType(Enum):
-    """模型提供商类型"""
     DASHSCOPE = "dashscope"  # 阿里通义千问
     OPENAI = "openai"        # OpenAI
     GEMINI = "gemini"        # Google Gemini
@@ -22,7 +21,6 @@ class ProviderType(Enum):
 
 @dataclass
 class ModelInfo:
-    """模型信息"""
     name: str
     display_name: str
     provider: ProviderType
@@ -32,15 +30,13 @@ class ModelInfo:
 
 @dataclass
 class LLMResponse:
-    """LLM响应"""
     content: str
     usage: Optional[Dict[str, Any]] = None
     model: Optional[str] = None
     finish_reason: Optional[str] = None
 
 class LLMProvider(ABC):
-    """LLM提供商抽象基类"""
-    
+
     def __init__(self, api_key: str, model_name: str, **kwargs):
         self.api_key = api_key
         self.model_name = model_name
@@ -74,15 +70,12 @@ class LLMProvider(ABC):
     @abstractmethod
     def get_available_models(self) -> List[ModelInfo]:
         """
-        获取可用模型列表
-        
         Returns:
             List[ModelInfo]: 可用模型列表
         """
         pass
     
     def _build_full_input(self, prompt: str, input_data: Any = None) -> str:
-        """构建完整的输入"""
         if input_data:
             if isinstance(input_data, dict):
                 return f"{prompt}\n\n输入内容：\n{json.dumps(input_data, ensure_ascii=False, indent=2)}"

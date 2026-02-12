@@ -8,7 +8,6 @@ from fastapi.responses import JSONResponse
 # 导入配置管理
 from .core.config import settings, get_logging_config, get_api_key
 
-# 配置日志
 logging_config = get_logging_config()
 logging.basicConfig(
     level=getattr(logging, logging_config["level"]),
@@ -21,15 +20,13 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# 使用统一的API路由注册
 from .api.v1 import api_router
 from .core.database import engine
 from .models.base import Base
 
-# Create FastAPI app
 app = FastAPI(
     title="AutoClip API",
-    description="AI视频切片处理API",
+    description="API для обработки AI-нарезки видео",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
@@ -39,12 +36,10 @@ app = FastAPI(
 @app.on_event("startup")
 async def startup_event():
     logger.info("启动AutoClip API服务...")
-    # 导入所有模型以确保表被创建
     from .models.bilibili import BilibiliAccount, UploadRecord
     Base.metadata.create_all(bind=engine)
     logger.info("数据库表创建完成")
     
-    # 加载API密钥到环境变量
     api_key = get_api_key()
     if api_key:
         import os
@@ -61,8 +56,7 @@ async def startup_event():
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    """应用关闭事件"""
-    logger.info("正在关闭AutoClip API服务...")
+    logger.info("Завершение работы AutoClip API сервиса...")
     # WebSocket网关服务已禁用
     # from .services.websocket_gateway_service import websocket_gateway_service
     # await websocket_gateway_service.stop()
@@ -81,68 +75,64 @@ app.add_middleware(
 # Include unified API routes
 app.include_router(api_router, prefix="/api/v1")
 
-# 添加独立的video-categories端点
 @app.get("/api/v1/video-categories")
 async def get_video_categories():
-    """获取视频分类配置."""
     return {
         "categories": [
             {
                 "value": "default",
-                "name": "默认",
-                "description": "通用视频内容处理",
+                "name": "По умолчанию",
+                "description": "Обработка общего видеоконтента",
                 "icon": "🎬",
                 "color": "#4facfe"
             },
             {
                 "value": "knowledge",
-                "name": "知识科普",
-                "description": "科学、技术、历史、文化等知识类内容",
+                "name": "Образование",
+                "description": "Научный, технический, исторический, культурный и другой образовательный контент",
                 "icon": "📚",
                 "color": "#52c41a"
             },
             {
                 "value": "entertainment",
-                "name": "娱乐",
-                "description": "游戏、音乐、电影等娱乐内容",
+                "name": "Развлечения",
+                "description": "Игры, музыка, кино и другой развлекательный контент",
                 "icon": "🎮",
                 "color": "#722ed1"
             },
             {
                 "value": "business",
-                "name": "商业",
-                "description": "商业、创业、投资等商业内容",
+                "name": "Бизнес",
+                "description": "Бизнес, предпринимательство, инвестиции и другой деловой контент",
                 "icon": "💼",
                 "color": "#fa8c16"
             },
             {
                 "value": "experience",
-                "name": "经验分享",
-                "description": "个人经历、生活感悟等经验内容",
+                "name": "Обмен опытом",
+                "description": "Личный опыт, жизненные наблюдения",
                 "icon": "🌟",
                 "color": "#eb2f96"
             },
             {
                 "value": "opinion",
-                "name": "观点评论",
-                "description": "时事评论、观点分析等评论内容",
+                "name": "Мнения и комментарии",
+                "description": "Актуальные комментарии, анализ мнений",
                 "icon": "💭",
                 "color": "#13c2c2"
             },
             {
                 "value": "speech",
-                "name": "演讲",
-                "description": "公开演讲、讲座等演讲内容",
+                "name": "Выступления",
+                "description": "Публичные выступления, лекции",
                 "icon": "🎤",
                 "color": "#f5222d"
             }
         ]
     }
 
-# 导入统一错误处理中间件
 from .core.error_middleware import global_exception_handler
 
-# 注册全局异常处理器
 app.add_exception_handler(Exception, global_exception_handler)
 
 if __name__ == "__main__":

@@ -1,7 +1,3 @@
-"""
-B站相关数据库模型
-"""
-
 from sqlalchemy import Column, String, Text, DateTime, Integer, Boolean, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -12,7 +8,6 @@ from .base import Base
 
 
 class BilibiliAccount(Base):
-    """B站账号表"""
     __tablename__ = "bilibili_accounts"
     
     id = Column(Integer, primary_key=True, autoincrement=True)

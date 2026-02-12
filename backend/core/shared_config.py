@@ -10,7 +10,6 @@ from dataclasses import dataclass, field
 from pydantic import BaseModel, validator
 from enum import Enum
 
-# 视频分类枚举
 class VideoCategory(str, Enum):
     DEFAULT = "default"
     KNOWLEDGE = "knowledge"
@@ -21,7 +20,6 @@ class VideoCategory(str, Enum):
     CONTENT_REVIEW = "content_review"
     ENTERTAINMENT = "entertainment"
 
-# 视频分类配置
 VIDEO_CATEGORIES_CONFIG = {
     VideoCategory.DEFAULT: {
         "name": "默认",
@@ -73,22 +71,18 @@ VIDEO_CATEGORIES_CONFIG = {
     }
 }
 
-# 项目根目录
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
-# 输入文件路径
 INPUT_DIR = PROJECT_ROOT / "input"
 INPUT_VIDEO = INPUT_DIR / "input.mp4"
 INPUT_SRT = INPUT_DIR / "input.srt"
 INPUT_TXT = INPUT_DIR / "input.txt"
 
-# 输出目录
 OUTPUT_DIR = PROJECT_ROOT / "data" / "output"
 CLIPS_DIR = OUTPUT_DIR / "clips"
 COLLECTIONS_DIR = OUTPUT_DIR / "collections"
 METADATA_DIR = OUTPUT_DIR / "metadata"
 
-# Prompt文件路径
 PROMPT_DIR = Path(__file__).parent.parent / "prompt"
 PROMPT_FILES = {
     "outline": PROMPT_DIR / "大纲.txt",
@@ -99,17 +93,14 @@ PROMPT_FILES = {
     "collection_title": PROMPT_DIR / "collection_title.txt"
 }
 
-# API配置
 DASHSCOPE_API_KEY = os.getenv("DASHSCOPE_API_KEY", "")
-MODEL_NAME = "qwen-plus"  # 通义千问模型名称
+MODEL_NAME = "qwen-plus"
 
-# 语音识别配置
 SPEECH_RECOGNITION_METHOD = os.getenv("SPEECH_RECOGNITION_METHOD", "whisper_local")
 SPEECH_RECOGNITION_LANGUAGE = os.getenv("SPEECH_RECOGNITION_LANGUAGE", "auto")
 SPEECH_RECOGNITION_MODEL = os.getenv("SPEECH_RECOGNITION_MODEL", "base")
 SPEECH_RECOGNITION_TIMEOUT = int(os.getenv("SPEECH_RECOGNITION_TIMEOUT", "1000"))
 
-# 处理参数
 CHUNK_SIZE = 5000  # 文本分块大小
 MIN_SCORE_THRESHOLD = 0.7  # 最低评分阈值
 MAX_CLIPS_PER_COLLECTION = 5  # 每个合集最大切片数
