@@ -8,6 +8,7 @@ import json
 import logging
 from typing import List, Tuple, Optional, Dict, Any
 import redis
+import os
 
 logger = logging.getLogger(__name__)
 
