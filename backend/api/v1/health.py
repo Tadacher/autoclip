@@ -11,9 +11,9 @@ router = APIRouter()
 
 @router.get("/")
 async def health_check() -> Dict[str, Any]:
-    """健康检查端点."""
+    """Конечная точка проверки состояния."""
     return {
-        "status": "healthy",
+        "status": "хз",
         "timestamp": datetime.now().isoformat(),
         "version": "1.0.0"
     }
@@ -21,48 +21,48 @@ async def health_check() -> Dict[str, Any]:
 
 @router.get("/video-categories")
 async def get_video_categories() -> Dict[str, Any]:
-    """获取视频分类配置."""
+    """Получить конфигурацию категорий видео."""
     return {
-        "categories": [
+            "categories": [
             {
                 "value": "knowledge",
-                "name": "知识科普",
-                "description": "科学、技术、历史、文化等知识类内容",
+                "name": "Научно-популярные знания",
+                "description": "Контент о науке, технологиях, истории, культуре и других знаниях",
                 "icon": "book",
                 "color": "#1890ff"
             },
             {
-                "value": "entertainment", 
-                "name": "娱乐休闲",
-                "description": "游戏、音乐、电影、综艺等娱乐内容",
+                "value": "entertainment",
+                "name": "Развлечения и отдых",
+                "description": "Игры, музыка, кино, шоу и другой развлекательный контент",
                 "icon": "play-circle",
                 "color": "#52c41a"
             },
             {
                 "value": "experience",
-                "name": "生活经验",
-                "description": "生活技巧、美食、旅行、手工等实用内容",
+                "name": "Жизненный опыт",
+                "description": "Практический контент: лайфхаки, кулинария, путешествия, рукоделие",
                 "icon": "heart",
                 "color": "#fa8c16"
             },
             {
                 "value": "opinion",
-                "name": "观点评论",
-                "description": "时事评论、观点分享、社会话题等",
+                "name": "Мнения и комментарии",
+                "description": "Комментарии к текущим событиям, обмен мнениями, социальные темы",
                 "icon": "message",
                 "color": "#722ed1"
             },
             {
                 "value": "business",
-                "name": "商业财经",
-                "description": "商业分析、财经资讯、投资理财等",
+                "name": "Бизнес и финансы",
+                "description": "Бизнес-аналитика, финансовые новости, инвестиции и управление капиталом",
                 "icon": "dollar",
                 "color": "#13c2c2"
             },
             {
                 "value": "speech",
-                "name": "演讲访谈",
-                "description": "演讲、访谈、对话等口语化内容",
+                "name": "Выступления и интервью",
+                "description": "Речи, интервью, диалоги и другой устный контент",
                 "icon": "sound",
                 "color": "#eb2f96"
             }

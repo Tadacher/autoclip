@@ -11,7 +11,7 @@ from ..services.account_health_service import check_account_health_task, check_a
 
 router = APIRouter()
 
-# 请求模型
+# Запрос модели
 class HealthCheckRequest(BaseModel):
     account_ids: Optional[List[int]] = None
     force_check: bool = False
@@ -20,7 +20,7 @@ class CookieRefreshRequest(BaseModel):
     account_id: int
     auto_refresh: bool = True
 
-# 响应模型
+# Модель ответа
 class AccountHealthResponse(BaseModel):
     account_id: int
     username: str
@@ -51,14 +51,14 @@ async def check_single_account_health(
     force_check: bool = False,
     db: Session = Depends(get_db)
 ):
-    """检查单个账号健康状态"""
+    """Проверка состояния одного аккаунта"""
     try:
-        # 检查账号是否存在
+        # Проверка существования аккаунта
         account = db.query(BilibiliAccount).filter(BilibiliAccount.id == account_id).first()
         if not account:
             raise HTTPException(status_code=404, detail="账号不存在")
         
-        # 如果不强制检查且最近检查过，返回缓存结果
+        # Если нет принудительной проверки и она недавно выполнялась, вернуть результат из кеша
         if not force_check and account.last_health_check:
             time_diff = datetime.now() - account.last_health_check
             if time_diff.total_seconds() < 300:  # 5分钟内检查过
@@ -72,7 +72,7 @@ async def check_single_account_health(
                     expires_in=account.health_details.get("cookie", {}).get("expires_in") if account.health_details else None
                 )
         
-        # 执行健康检查
+        # Выполнить проверку состояния
         result = await health_service.check_account_health(account_id)
         
         return AccountHealthResponse(
@@ -96,9 +96,9 @@ async def check_multiple_accounts_health(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
 ):
-    """批量检查账号健康状态"""
+    """Пакетная проверка состояния аккаунтов"""
     try:
-        # 获取要检查的账号
+        # Получить аккаунты для проверки
         if request.account_ids:
             accounts = db.query(BilibiliAccount).filter(
                 BilibiliAccount.id.in_(request.account_ids),
@@ -118,10 +118,10 @@ async def check_multiple_accounts_health(
                 last_updated=datetime.now()
             )
         
-        # 执行批量检查
+        # Выполнить пакетную проверку
         results = []
         for account in accounts:
-            # 如果不强制检查且最近检查过，使用缓存结果
+            # Если нет принудительной проверки и она недавно выполнялась, использовать результат из кеша
             if not request.force_check and account.last_health_check:
                 time_diff = datetime.now() - account.last_health_check
                 if time_diff.total_seconds() < 300:  # 5分钟内检查过
@@ -136,7 +136,7 @@ async def check_multiple_accounts_health(
                     ))
                     continue
             
-            # 执行实时检查
+            # Выполнить проверку в реальном времени
             result = await health_service.check_account_health(account.id)
             results.append(AccountHealthResponse(
                 account_id=result["account_id"],
@@ -148,7 +148,7 @@ async def check_multiple_accounts_health(
                 expires_in=result.get("details", {}).get("cookie", {}).get("expires_in")
             ))
         
-        # 统计各状态数量
+        # Подсчет количества по состояниям
         status_counts = {
             AccountHealthStatus.HEALTHY: 0,
             AccountHealthStatus.WARNING: 0,

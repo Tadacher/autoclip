@@ -44,10 +44,6 @@ ICON_INFO="ℹ️"
 ICON_HEALTH="💚"
 ICON_SICK="🤒"
 ICON_ROCKET="🚀"
-ICON_DATABASE="🗄️"
-ICON_WORKER="👷"
-ICON_WEB="🌐"
-ICON_REDIS="🔴"
 
 # =============================================================================
 # 工具函数
@@ -74,61 +70,61 @@ log_header() {
     echo -e "${PURPLE}$(printf '=%.0s' {1..50})${NC}"
 }
 
-# 检查服务健康状态
+# Проверка состояния здоровья сервиса
 check_service_health() {
     local url="$1"
     local service_name="$2"
-    
+
     if curl -fsS "$url" >/dev/null 2>&1; then
-        echo -e "${GREEN}${ICON_HEALTH} $service_name 健康${NC}"
+        echo -e "${GREEN}${ICON_HEALTH} $service_name здоров${NC}"
         return 0
     else
-        echo -e "${RED}${ICON_SICK} $service_name 不健康${NC}"
+        echo -e "${RED}${ICON_SICK} $service_name нездоров${NC}"
         return 1
     fi
 }
 
-# 检查进程状态
+# Проверка состояния процесса
 check_process_status() {
     local pid_file="$1"
     local service_name="$2"
     local process_pattern="$3"
-    
+
     if [[ -f "$pid_file" ]]; then
         local pid=$(cat "$pid_file")
         if kill -0 "$pid" 2>/dev/null; then
-            echo -e "${GREEN}${ICON_SUCCESS} $service_name 运行中 (PID: $pid)${NC}"
+            echo -e "${GREEN}${ICON_SUCCESS} $service_name запущен (PID: $pid)${NC}"
             return 0
         else
-            echo -e "${RED}${ICON_ERROR} $service_name PID文件存在但进程不存在${NC}"
+            echo -e "${RED}${ICON_ERROR} $service_name PID файл существует, но процесс отсутствует${NC}"
             return 1
         fi
     else
-        # 检查是否有相关进程在运行
+        # Проверка наличия запущенных процессов
         if pgrep -f "$process_pattern" >/dev/null; then
             local pids=$(pgrep -f "$process_pattern" | tr '\n' ' ')
-            echo -e "${YELLOW}${ICON_WARNING} $service_name 运行中但无PID文件 (PIDs: $pids)${NC}"
+            echo -e "${YELLOW}${ICON_WARNING} $service_name запущен без PID файла (PIDs: $pids)${NC}"
             return 0
         else
-            echo -e "${RED}${ICON_ERROR} $service_name 未运行${NC}"
+            echo -e "${RED}${ICON_ERROR} $service_name не запущен${NC}"
             return 1
         fi
     fi
 }
 
-# 获取服务信息
+# Получение информации о сервисе
 get_service_info() {
     local service_name="$1"
     local pid_file="$2"
     local process_pattern="$3"
-    
-    echo -e "\n${CYAN}📊 $service_name 详细信息:${NC}"
-    
+
+    echo -e "\n${CYAN}📊 Детальная информация $service_name:${NC}"
+
     if [[ -f "$pid_file" ]]; then
         local pid=$(cat "$pid_file")
         if kill -0 "$pid" 2>/dev/null; then
             echo "  PID: $pid"
-            echo "  进程信息:"
+            echo "  Информация о процессе:"
             ps -p "$pid" -o pid,ppid,etime,pcpu,pmem,cmd --no-headers 2>/dev/null | while read line; do
                 echo "    $line"
             done
@@ -137,7 +133,7 @@ get_service_info() {
         local pids=$(pgrep -f "$process_pattern" 2>/dev/null || true)
         if [[ -n "$pids" ]]; then
             echo "  PIDs: $pids"
-            echo "  进程信息:"
+            echo "  Информация о процессах:"
             echo "$pids" | while read pid; do
                 ps -p "$pid" -o pid,ppid,etime,pcpu,pmem,cmd --no-headers 2>/dev/null | while read line; do
                     echo "    $line"
@@ -148,38 +144,38 @@ get_service_info() {
 }
 
 # =============================================================================
-# 检查函数
+# Функции проверки
 # =============================================================================
 
 check_redis() {
-    log_header "Redis 服务状态"
-    
+    log_header "Состояние сервиса Redis"
+
     if redis-cli ping >/dev/null 2>&1; then
-        log_success "Redis 服务运行正常"
-        
-        # 获取Redis信息
-        echo -e "\n${CYAN}📊 Redis 详细信息:${NC}"
+        log_success "Сервис Redis работает нормально"
+
+        # Получение информации о Redis
+        echo -e "\n${CYAN}📊 Детальная информация Redis:${NC}"
         redis-cli info server | grep -E "(redis_version|uptime_in_seconds|connected_clients)" | while read line; do
             echo "  $line"
         done
         return 0
     else
-        log_error "Redis 服务未运行或无法连接"
+        log_error "Сервис Redis не запущен или недоступен"
         return 1
     fi
 }
 
 check_backend() {
-    log_header "后端 API 服务状态"
-    
-    # 检查进程状态
-    if check_process_status "$BACKEND_PID_FILE" "后端服务" "uvicorn.*backend.main:app"; then
-        # 检查健康状态
-        if check_service_health "http://localhost:$BACKEND_PORT/api/v1/health/" "后端API"; then
-            get_service_info "后端服务" "$BACKEND_PID_FILE" "uvicorn.*backend.main:app"
+    log_header "Состояние сервиса API бэкенда"
+
+    # Проверка состояния процесса
+    if check_process_status "$BACKEND_PID_FILE" "Сервис бэкенда" "uvicorn.*backend.main:app"; then
+        # Проверка состояния здоровья
+        if check_service_health "http://localhost:$BACKEND_PORT/api/v1/health/" "API бэкенда"; then
+            get_service_info "Сервис бэкенда" "$BACKEND_PID_FILE" "uvicorn.*backend.main:app"
             return 0
         else
-            log_warning "后端进程运行但API不响应"
+            log_warning "Процесс бэкенда запущен, но API не отвечает"
             return 1
         fi
     else
@@ -188,16 +184,16 @@ check_backend() {
 }
 
 check_frontend() {
-    log_header "前端服务状态"
-    
-    # 检查进程状态
-    if check_process_status "$FRONTEND_PID_FILE" "前端服务" "npm.*dev\|vite"; then
-        # 检查健康状态
-        if check_service_health "http://localhost:$FRONTEND_PORT/" "前端界面"; then
-            get_service_info "前端服务" "$FRONTEND_PID_FILE" "npm.*dev\|vite"
+    log_header "Состояние сервиса фронтенда"
+
+    # Проверка состояния процесса
+    if check_process_status "$FRONTEND_PID_FILE" "Сервис фронтенда" "npm.*dev\|vite"; then
+        # Проверка состояния здоровья
+        if check_service_health "http://localhost:$FRONTEND_PORT/" "Интерфейс фронтенда"; then
+            get_service_info "Сервис фронтенда" "$FRONTEND_PID_FILE" "npm.*dev\|vite"
             return 0
         else
-            log_warning "前端进程运行但服务不响应"
+            log_warning "Процесс фронтенда запущен, но сервис не отвечает"
             return 1
         fi
     else
@@ -206,23 +202,23 @@ check_frontend() {
 }
 
 check_celery() {
-    log_header "Celery Worker 状态"
-    
-    # 检查进程状态
+    log_header "Состояние Celery Worker"
+
+    # Проверка состояния процесса
     if check_process_status "$CELERY_PID_FILE" "Celery Worker" "celery.*worker"; then
         get_service_info "Celery Worker" "$CELERY_PID_FILE" "celery.*worker"
-        
-        # 检查Celery连接
+
+        # Проверка подключения Celery
         if command -v celery >/dev/null 2>&1; then
-            echo -e "\n${CYAN}📊 Celery 详细信息:${NC}"
+            echo -e "\n${CYAN}📊 Детальная информация Celery:${NC}"
             if PYTHONPATH="${PWD}:${PYTHONPATH:-}" celery -A backend.core.celery_app inspect active >/dev/null 2>&1; then
-                log_success "Celery 连接正常"
-                
-                # 获取活跃任务
+                log_success "Подключение Celery работает нормально"
+
+                # Получение активных задач
                 local active_tasks=$(PYTHONPATH="${PWD}:${PYTHONPATH:-}" celery -A backend.core.celery_app inspect active 2>/dev/null | jq -r '.[] | length' 2>/dev/null || echo "0")
-                echo "  活跃任务数: $active_tasks"
+                echo "  Количество активных задач: $active_tasks"
             else
-                log_warning "Celery 连接测试失败"
+                log_warning "Не удалось проверить подключение Celery"
             fi
         fi
         return 0
@@ -232,51 +228,51 @@ check_celery() {
 }
 
 check_database() {
-    log_header "数据库状态"
-    
+    log_header "Состояние базы данных"
+
     if [[ -f "data/autoclip.db" ]]; then
-        log_success "数据库文件存在"
-        
-        # 获取数据库信息
-        echo -e "\n${CYAN}📊 数据库详细信息:${NC}"
+        log_success "Файл базы данных существует"
+
+        # Получение информации о базе данных
+        echo -e "\n${CYAN}📊 Детальная информация базы данных:${NC}"
         local db_size=$(du -h "data/autoclip.db" 2>/dev/null | cut -f1)
-        echo "  文件大小: $db_size"
-        
-        # 检查数据库连接
+        echo "  Размер файла: $db_size"
+
+        # Проверка подключения к базе данных
         if python -c "
 import sys
 sys.path.insert(0, '.')
 from backend.core.database import test_connection
 if test_connection():
-    print('数据库连接正常')
+    print('Подключение к базе данных работает нормально')
 else:
-    print('数据库连接失败')
+    print('Ошибка подключения к базе данных')
     sys.exit(1)
 " 2>/dev/null; then
-            log_success "数据库连接正常"
+            log_success "Подключение к базе данных работает нормально"
         else
-            log_error "数据库连接失败"
+            log_error "Ошибка подключения к базе данных"
             return 1
         fi
     else
-        log_warning "数据库文件不存在"
+        log_warning "Файл базы данных не существует"
         return 1
     fi
 }
 
 check_logs() {
-    log_header "日志文件状态"
-    
+    log_header "Состояние файлов логов"
+
     if [[ -d "$LOG_DIR" ]]; then
-        log_success "日志目录存在"
-        
-        echo -e "\n${CYAN}📊 日志文件信息:${NC}"
+        log_success "Директория логов существует"
+
+        echo -e "\n${CYAN}📊 Информация о файлах логов:${NC}"
         ls -la "$LOG_DIR"/*.log 2>/dev/null | while read line; do
             echo "  $line"
         done
-        
-        # 显示最新日志
-        echo -e "\n${CYAN}📝 最新日志 (最后10行):${NC}"
+
+        # Отображение последних логов
+        echo -e "\n${CYAN}📝 Последние логи (последние 10 строк):${NC}"
         for log_file in "$LOG_DIR"/*.log; do
             if [[ -f "$log_file" ]]; then
                 echo -e "\n${YELLOW}$(basename "$log_file"):${NC}"
@@ -286,53 +282,55 @@ check_logs() {
             fi
         done
     else
-        log_warning "日志目录不存在"
+        log_warning "Директория логов не существует"
     fi
 }
 
 # =============================================================================
-# 主函数
+# Главная функция
 # =============================================================================
 
 main() {
-    log_header "AutoClip 系统状态检查 v2.0"
-    
+    log_header "Проверка состояния системы AutoClip v2.0"
+
     local overall_status=0
-    
-    # 检查各个服务
+
+    # Проверка каждого сервиса
     check_redis || overall_status=1
     check_database || overall_status=1
     check_celery || overall_status=1
     check_backend || overall_status=1
     check_frontend || overall_status=1
     check_logs
-    
-    # 显示总体状态
-    log_header "系统总体状态"
-    
+
+    # Отображение общего состояния
+    log_header "Общее состояние системы"
+
     if [[ $overall_status -eq 0 ]]; then
-        log_success "所有服务运行正常"
+        log_success "Все сервисы работают нормально"
         echo ""
-        echo -e "${WHITE}🎉 AutoClip 系统完全健康！${NC}"
+        echo -e "${WHITE}🎉 Система AutoClip полностью работоспособна!${NC}"
         echo ""
-        echo -e "${CYAN}🌐 访问地址:${NC}"
-        echo -e "  前端界面: http://localhost:$FRONTEND_PORT"
-        echo -e "  后端API:  http://localhost:$BACKEND_PORT"
-        echo -e "  API文档:  http://localhost:$BACKEND_PORT/docs"
+        echo -e "${CYAN}🌐 Адреса для доступа:${NC}"
+        echo -e "  Интерфейс фронтенда: http://localhost:$FRONTEND_PORT"
+        echo -e "  API бэкенда: http://localhost:$BACKEND_PORT"
+        echo -e "  Документация API: http://localhost:$BACKEND_PORT/docs"
     else
-        log_error "部分服务存在问题"
+        log_error "Некоторые сервисы работают некорректно"
         echo ""
-        echo -e "${YELLOW}💡 建议操作:${NC}"
-        echo -e "  1. 查看日志文件了解详细错误信息"
-        echo -e "  2. 重启系统: ./stop_autoclip.sh && ./start_autoclip.sh"
-        echo -e "  3. 检查环境配置和依赖"
+        echo -e "${YELLOW}💡 Рекомендации:${NC}"
+        echo -e "  1. Просмотрите файлы логов для получения детальной информации об ошибках"
+        echo -e "  2. Перезапустите систему: ./stop_autoclip.sh && ./start_autoclip.sh"
+        echo -e "  3. Проверьте конфигурацию окружения и зависимости"
     fi
-    
+
     echo ""
-    echo -e "${CYAN}📋 常用命令:${NC}"
-    echo -e "  启动系统: ./start_autoclip.sh"
-    echo -e "  停止系统: ./stop_autoclip.sh"
-    echo -e "  查看日志: tail -f $LOG_DIR/*.log"
+    echo -e "${CYAN}📋 Часто используемые команды:${NC}"
+    echo -e "  Запуск системы: ./start_autoclip.sh"
+    echo -e "  Остановка системы: ./stop_autoclip.sh"
+    echo -e "  Просмотр логов: tail -f $LOG_DIR/*.log"
+
+    read -p "Нажмите Enter для завершения работы скрипта (сервисы продолжат работу в фоне)..."
 }
 
 # 运行主函数

@@ -63,9 +63,9 @@ async def add_upload_task(
     request: UploadTaskRequest,
     queue_service: UploadQueueService = Depends(get_queue_service)
 ):
-    """添加单个上传任务"""
+    """Добавить одну задачу загрузки"""
     try:
-        # 转换优先级
+        # Приоритет конвертации
         priority_map = {
             "low": TaskPriority.LOW,
             "normal": TaskPriority.NORMAL,
@@ -93,9 +93,9 @@ async def add_batch_upload_tasks(
     request: BatchUploadRequest,
     queue_service: UploadQueueService = Depends(get_queue_service)
 ):
-    """批量添加上传任务"""
+    """Добавить пакетные задачи загрузки"""
     try:
-        # 转换任务数据
+        # Данные задачи конвертации
         tasks_data = []
         priority_map = {
             "low": TaskPriority.LOW,
