@@ -6,7 +6,7 @@ YouTube相关API路由
 import logging
 from typing import Optional
 
-import Path
+from pathlib import Path
 from fastapi import APIRouter, HTTPException, Form, UploadFile, File
 from pydantic import BaseModel
 import sys

@@ -12,6 +12,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent.parent))
 from ...utils.bilibili_downloader import BilibiliDownloader, get_bilibili_video_info
 from ...core.config import get_data_directory
+from pathlib import Path
 import uuid
 import asyncio
 from datetime import datetime
