@@ -429,16 +429,16 @@ class SpeechRecognizer:
             
             # 检查文件格式，如果是视频文件需要先提取音频
             audio_path = self._extract_audio_from_video(video_path, output_path.parent)
-            
-            # 创建BcutASR实例，使用音频文件
+
+            # Создание экземпляра BcutASR с использованием аудиофайла
             asr = BcutASR(str(audio_path))
             
-            # 上传文件
-            logger.info("正在上传文件到bcut-asr...")
+            # Загрузить файл
+            logger.info("Загрузка файла на Bcut-asr...")
             asr.upload()
             
             # 创建任务
-            logger.info("正在创建识别任务...")
+            logger.info("Создание задачи распознавания...")
             asr.create_task()
             
             # 轮询检查结果

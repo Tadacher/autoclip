@@ -26,3 +26,4 @@ pysrt
 psutil
 
 pytz
+ffmpeg-python

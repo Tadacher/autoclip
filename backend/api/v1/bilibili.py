@@ -12,7 +12,6 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent.parent))
 from ...utils.bilibili_downloader import BilibiliDownloader, get_bilibili_video_info
 from ...core.config import get_data_directory
-from pathlib import Path
 import uuid
 import asyncio
 from datetime import datetime
@@ -267,12 +266,12 @@ async def update_project_download_progress(project_id: str, progress: float, mes
 async def process_download_task(task_id: str, request: BilibiliDownloadRequest, project_id: str):
     """处理下载任务"""
     try:
-        # 更新任务状态为处理中
+        # Обновление статуса задачи на "processing"
         download_tasks[task_id].status = "processing"
         download_tasks[task_id].progress = 10.0
         
-        # 更新项目状态和进度
-        await update_project_download_progress(project_id, 10.0, "正在获取视频信息...")
+        # Обновление статуса и прогресса проекта
+        await update_project_download_progress(project_id, 10.0, "Получение информации о видео...")
         
         # 获取视频信息
         video_info = await get_bilibili_video_info(request.url, request.browser)
@@ -301,20 +300,19 @@ async def process_download_task(task_id: str, request: BilibiliDownloadRequest, 
         
         # 如果没有字幕文件，优先使用Whisper生成字幕
         if not subtitle_path and video_path:
-            logger.info("优先使用Whisper生成高质量字幕")
-            # 更新项目进度
-            await update_project_download_progress(project_id, 70.0, "正在使用Whisper生成字幕...")
-            
+            logger.info("Приоритетное использование Whisper для создания высококачественных субтитров")
+            # Обновление прогресса проекта
+            await update_project_download_progress(project_id, 70.0, "Создание субтитров с помощью Whisper...")
+            logger.info("Entering try block")
             try:
                 from ...utils.speech_recognizer import generate_subtitle_for_video, SpeechRecognitionError
                 from pathlib import Path
                 video_file_path = Path(video_path)
-                
-                # 根据视频信息选择合适的模型，但始终使用自动语言检测
-                model = "base"  # 默认使用平衡模型
+
+                # Выбор подходящей модели на основе информации о видео, но всегда с автоматическим определением языка                model = "base"  # 默认使用平衡模型
                 language = "auto"  # 始终使用自动语言检测
-                
-                # 可以根据视频标题或描述判断内容类型，选择不同的模型大小
+
+                # Можно определить тип контента по названию или описанию видео и выбрать соответствующий размер модели
                 if video_info.title and any(keyword in video_info.title.lower() for keyword in ['教程', '教学', '知识', '科普']):
                     model = "small"  # 知识类内容使用更准确的模型
                 elif video_info.title and any(keyword in video_info.title.lower() for keyword in ['演讲', '讲座', '分享']):
@@ -334,7 +332,7 @@ async def process_download_task(task_id: str, request: BilibiliDownloadRequest, 
                 await update_project_download_progress(project_id, 90.0, "字幕生成完成，正在准备处理...")
                 
             except SpeechRecognitionError as e:
-                logger.error(f"Whisper字幕生成失败: {e}")
+                logger.error(f"Ошибка виспера (bilibi.py): {e}")
                 # Whisper失败时，标记项目为失败状态
                 logger.error("字幕文件不存在且Whisper生成失败，项目将标记为失败状态")
                 subtitle_path = None  # 确保字幕路径为空，后续会标记项目失败
