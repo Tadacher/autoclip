@@ -489,7 +489,7 @@ class SpeechRecognizer:
             with open(output_path, 'w', encoding='utf-8') as f:
                 f.write(subtitle_content)
             
-            logger.info(f"bcut-asr字幕生成成功: {output_path}")
+            logger.info(f"Субтитры bcut-asr успешно созданы (speech_recognizer.py 492): {output_path}")
             return output_path
             
         except Exception as e:
