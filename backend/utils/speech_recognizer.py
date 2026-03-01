@@ -360,20 +360,21 @@ class SpeechRecognizer:
         
         # 根据配置的方法选择识别服务，支持回退机制
         try:
-            if config.method == SpeechRecognitionMethod.BCUT_ASR:
-                return self._generate_subtitle_bcut_asr(video_path, output_path, config)
-            elif config.method == SpeechRecognitionMethod.WHISPER_LOCAL:
-                return self._generate_subtitle_whisper_local(video_path, output_path, config)
-            elif config.method == SpeechRecognitionMethod.OPENAI_API:
-                return self._generate_subtitle_openai_api(video_path, output_path, config)
-            elif config.method == SpeechRecognitionMethod.AZURE_SPEECH:
-                return self._generate_subtitle_azure_speech(video_path, output_path, config)
-            elif config.method == SpeechRecognitionMethod.GOOGLE_SPEECH:
-                return self._generate_subtitle_google_speech(video_path, output_path, config)
-            elif config.method == SpeechRecognitionMethod.ALIYUN_SPEECH:
-                return self._generate_subtitle_aliyun_speech(video_path, output_path, config)
-            else:
-                raise SpeechRecognitionError(f"不支持的语音识别方法: {config.method}")
+            return self._generate_subtitle_whisper_local(video_path, output_path, config)
+            # if config.method == SpeechRecognitionMethod.BCUT_ASR:
+            #     return self._generate_subtitle_bcut_asr(video_path, output_path, config)
+            # elif config.method == SpeechRecognitionMethod.WHISPER_LOCAL:
+            #     return self._generate_subtitle_whisper_local(video_path, output_path, config)
+            # elif config.method == SpeechRecognitionMethod.OPENAI_API:
+            #     return self._generate_subtitle_openai_api(video_path, output_path, config)
+            # elif config.method == SpeechRecognitionMethod.AZURE_SPEECH:
+            #     return self._generate_subtitle_azure_speech(video_path, output_path, config)
+            # elif config.method == SpeechRecognitionMethod.GOOGLE_SPEECH:
+            #     return self._generate_subtitle_google_speech(video_path, output_path, config)
+            # elif config.method == SpeechRecognitionMethod.ALIYUN_SPEECH:
+            #     return self._generate_subtitle_aliyun_speech(video_path, output_path, config)
+            # else:
+            #     raise SpeechRecognitionError(f"不支持的语音识别方法: {config.method}")
         except SpeechRecognitionError as e:
             # 如果启用了回退机制且当前方法不是回退方法，则尝试回退
             if (config.enable_fallback and 
