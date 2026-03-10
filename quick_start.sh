@@ -35,11 +35,10 @@ main() {
     # Активация виртуального окружения
     log_info "Активация виртуального окружения..."
     source venv/bin/activate
-    log_success "1"
+
     # Установка пути Python
     : "${PYTHONPATH:=}"
     export PYTHONPATH="${PWD}:${PYTHONPATH}"
-    log_success "2"
 
     # Загрузка переменных окружения
     if [[ -f ".env" ]]; then
@@ -47,6 +46,7 @@ main() {
         source .env
         set +a
     fi
+    log_success "3"
 
     # Запуск Redis (при необходимости)
     if ! redis-cli ping >/dev/null 2>&1; then
@@ -56,9 +56,11 @@ main() {
             sleep 2
         fi
     fi
+    log_success "4"
 
     # Создание директории для логов
     mkdir -p logs
+    log_success "5"
 
     # Запуск бэкенда
     log_info "Запуск сервиса бэкенда..."
