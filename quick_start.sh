@@ -39,7 +39,7 @@ main() {
     # Установка пути Python
     : "${PYTHONPATH:=}"
     export PYTHONPATH="${PWD}:${PYTHONPATH}"
-
+    log_success "2"
     # Загрузка переменных окружения
     if [[ -f ".env" ]]; then
         set -a
