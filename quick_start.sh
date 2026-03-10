@@ -26,9 +26,6 @@ log_warning() {
 }
 
 main() {
-   echo -e "${GREEN}🚀 Быстрый запуск AutoClip${NC}"
-    echo ""
-
     # Проверка виртуального окружения
     if [[ ! -d "venv" ]]; then
         log_warning "Виртуальное окружение не найдено. Сначала выполните: python3 -m venv venv"
