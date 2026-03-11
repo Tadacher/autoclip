@@ -202,7 +202,8 @@ class SpeechRecognizer:
     def _check_available_methods(self) -> Dict[SpeechRecognitionMethod, bool]:
         """检查可用的语音识别方法"""
         methods = {}
-        
+
+
         # 检查bcut-asr
         methods[SpeechRecognitionMethod.BCUT_ASR] = self._check_bcut_asr_availability()
         
