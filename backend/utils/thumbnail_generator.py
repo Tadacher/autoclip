@@ -245,7 +245,7 @@ class ThumbnailGenerator:
                 return None
                 
         except Exception as e:
-            logger.error(f"生成base64缩略图失败: {e}")
+            logger.error(f"Ошибка создания миниатюры в формате base64: {e}")
             return None
     
     def get_video_info(self, video_path: Path) -> Optional[dict]:
