@@ -90,14 +90,14 @@ def fix_bilibili_thumbnail(project, db):
         return False
 
 def fix_file_import_thumbnail(project, db):
-    """修复文件导入项目的缩略图"""
+    """Исправление миниатюр при импорте файлов в проект"""
     try:
         video_path = Path(project.video_path)
         if not video_path.exists():
-            print(f"⚠️  视频文件不存在: {video_path}")
+            print(f"⚠️  не может найти видеофайл по указанному пути: {video_path}")
             return False
         
-        # 生成缩略图
+        # Генерация эскизов
         thumbnail_data = generate_project_thumbnail(project.id, video_path)
         
         if thumbnail_data:
@@ -106,7 +106,7 @@ def fix_file_import_thumbnail(project, db):
             db.commit()
             return True
         else:
-            print("⚠️  缩略图生成失败")
+            print("⚠️  Не удалось создать миниатюру")
             return False
             
     except Exception as e:
