@@ -20,26 +20,26 @@ class ThumbnailGenerator:
     def generate_thumbnail(self, video_path: Path, output_path: Optional[Path] = None, 
                           time_offset: Optional[float] = None, width: int = 320, height: int = 180) -> Optional[Path]:
         """
-        生成视频缩略图 - 使用智能帧选择策略
-        
+        Генерация миниатюры видео - использование стратегии интеллектуального выбора кадра
+
         Args:
-            video_path: 视频文件路径
-            output_path: 输出缩略图路径，如果为None则自动生成
-            time_offset: 提取时间点（秒），如果为None则自动选择最佳时间点
-            width: 缩略图宽度
-            height: 缩略图高度
-            
+            video_path: путь к видеофайлу
+            output_path: путь для сохранения миниатюры, если None - генерируется автоматически
+            time_offset: временная точка для извлечения кадра (в секундах), если None - выбирается автоматически оптимальная точка
+            width: ширина миниатюры
+            height: высота миниатюры
+
         Returns:
-            生成的缩略图路径，失败返回None
+            путь к сгенерированной миниатюре, в случае неудачи - None
         """
         try:
             if not video_path.exists():
-                logger.error(f"视频文件不存在: {video_path}")
+                logger.error(f"Видеофайл отсутствует: {video_path}")
                 return None
             
             # 检查文件格式
             if video_path.suffix.lower() not in self.supported_formats:
-                logger.error(f"不支持的视频格式: {video_path.suffix}")
+                logger.error(f"Формат видео не поддерживается: {video_path.suffix}")
                 return None
             
             # 生成输出路径
@@ -52,9 +52,9 @@ class ThumbnailGenerator:
             # 智能选择时间点
             if time_offset is None:
                 time_offset = self._get_optimal_thumbnail_time(video_path)
-                logger.info("time_offset = self._get_optimal_thumbnail_time(video_path)")
             # 检查是否使用视频封面
             if time_offset == -1.0:
+                logger.info("time_offset == -1.0")
                 # 使用视频封面
                 cover_path = video_path.parent / f"{video_path.stem}_cover.jpg"
                 if cover_path.exists():
@@ -83,6 +83,7 @@ class ThumbnailGenerator:
                     ]
                     logger.info(f"Обложка отсутствует, используется кадр из стандартной временной точки: {time_offset}秒")
             else:
+                logger.info("time_offset != -1.0")
                 # 使用指定时间点
                 logger.info(f"为视频 {video_path.name} 选择缩略图时间点: {time_offset}秒")
                 cmd = [
@@ -96,7 +97,7 @@ class ThumbnailGenerator:
                     str(output_path)
                 ]
             
-            logger.info(f"Создать миниатюру: {video_path} -> {output_path}")
+            logger.info(f"Создать миниатюру: {video_path} -> {output_path}, запускаю команду")
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
             
             if result.returncode == 0:
