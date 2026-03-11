@@ -58,18 +58,18 @@ def process_import_task(self, project_id: str, video_path: str, srt_file_path: O
                 logger.error(f"生成项目缩略图时发生错误: {e}")
                 # 缩略图生成失败不影响后续流程
         else:
-            logger.info(f"项目 {project_id} 已有缩略图，跳过生成")
+            logger.info(f"В проекте {project_id} Миниатюра уже существует, генерация пропущена")
         
-        # 2. 生成字幕（如果没有提供）
+        # 2. Создать субтитры（如果没有提供）
         srt_path = srt_file_path
         if not srt_path:
-            logger.info(f"开始为项目 {project_id} 生成字幕...")
-            self.update_state(state='PROGRESS', meta={'progress': 40, 'message': '生成字幕...'})
+            logger.info(f"Начинается работа над проектом... {project_id} Создать субтитры...")
+            self.update_state(state='PROGRESS', meta={'progress': 40, 'message': 'Создать субтитры...'})
             
             try:
                 from backend.utils.speech_recognizer import generate_subtitle_for_video
                 
-                # 根据视频分类选择模型
+                # Выбор модели на основе категории видео
                 project = project_service.get(project_id)
                 video_category = "knowledge"  # 默认分类
                 if project and project.processing_config:

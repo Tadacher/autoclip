@@ -240,10 +240,10 @@ class SpeechRecognizer:
         """检查本地Whisper是否可用"""
         try:
             result = subprocess.run(['whisper', '--help'], 
-                                  capture_output=True, text=True, timeout=5)
+                                  capture_output=True, text=True, timeout=20)
             return result.returncode == 0
         except (subprocess.TimeoutExpired, FileNotFoundError):
-            logger.warning("本地Whisper未安装或不可用")
+            logger.warning("Локальный Whisper не установлен или недоступен")
             return False
     
     def _check_openai_availability(self) -> bool:
