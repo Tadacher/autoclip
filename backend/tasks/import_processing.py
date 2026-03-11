@@ -53,7 +53,7 @@ def process_import_task(self, project_id: str, video_path: str, srt_file_path: O
                     db.commit()
                     logger.info(f"项目 {project_id} 缩略图生成并保存成功")
                 else:
-                    logger.warning(f"项目 {project_id} 缩略图生成失败")
+                    logger.warning(f"项目 {project_id} Не удалось создать миниатюру в generate_project_thumbnail")
             except Exception as e:
                 logger.error(f"生成项目缩略图时发生错误: {e}")
                 # 缩略图生成失败不影响后续流程

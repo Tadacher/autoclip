@@ -212,22 +212,22 @@ class ThumbnailGenerator:
     def generate_thumbnail_base64(self, video_path: Path, time_offset: Optional[float] = None, 
                                  width: int = 320, height: int = 180) -> Optional[str]:
         """
-        生成缩略图并返回base64编码
-        
+        Генерирует миниатюру и возвращает её в base64-кодировке
+
         Args:
-            video_path: 视频文件路径
-            time_offset: 提取时间点（秒），如果为None则自动选择最佳时间点
-            width: 缩略图宽度
-            height: 缩略图高度
-            
+            video_path: путь к видеофайлу
+            time_offset: временная точка для извлечения (в секундах), если None — выбирается автоматически оптимальное время
+            width: ширина миниатюры
+            height: высота миниатюры
+
         Returns:
-            base64编码的缩略图数据，失败返回None
+            Данные миниатюры в кодировке base64, в случае ошибки — None
         """
         try:
             # 生成临时缩略图
             temp_path = video_path.parent / f"temp_thumbnail_{video_path.stem}.jpg"
             thumbnail_path = self.generate_thumbnail(video_path, temp_path, time_offset, width, height)
-            
+            logger.error(f"начинаю непосредственную генерацию: temp path{temp_path},внутрь path {thumbnail_path}, time offset {time_offset}")
             if thumbnail_path and thumbnail_path.exists():
                 # 读取图片并转换为base64
                 with open(thumbnail_path, 'rb') as f:
