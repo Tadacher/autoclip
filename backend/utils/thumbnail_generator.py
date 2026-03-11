@@ -96,7 +96,7 @@ class ThumbnailGenerator:
                     str(output_path)
                 ]
             
-            logger.info(f"生成缩略图: {video_path} -> {output_path}")
+            logger.info(f"Создать миниатюру: {video_path} -> {output_path}")
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
             
             if result.returncode == 0:
@@ -115,13 +115,13 @@ class ThumbnailGenerator:
     
     def _extract_video_cover(self, video_path: Path) -> Optional[Path]:
         """
-        尝试提取视频的封面图片
-        
+        Попытка извлечения обложки видео
+
         Args:
-            video_path: 视频文件路径
-            
+            video_path: путь к видеофайлу
+
         Returns:
-            封面图片路径，如果不存在则返回None
+            путь к обложке или None, если обложка отсутствует
         """
         try:
             # 检查是否有嵌入的封面图片
@@ -140,7 +140,7 @@ class ThumbnailGenerator:
             if result.returncode == 0:
                 cover_path = video_path.parent / f"{video_path.stem}_cover.jpg"
                 if cover_path.exists() and cover_path.stat().st_size > 0:
-                    logger.info(f"成功提取视频封面: {cover_path}")
+                    logger.info(f"Обложка видео успешно извлечена: {cover_path}")
                     return cover_path
             
             return None
@@ -151,26 +151,26 @@ class ThumbnailGenerator:
     
     def _get_optimal_thumbnail_time(self, video_path: Path) -> float:
         """
-        智能选择最佳的缩略图时间点
-        
-        策略：
-        1. 优先尝试提取视频封面（如果存在）
-        2. 如果视频很短（<30秒），选择中间位置
-        3. 如果视频中等长度（30秒-5分钟），选择10%位置
-        4. 如果视频很长（>5分钟），选择5%位置
-        5. 避免选择开头和结尾，因为这些位置通常是黑屏或过渡
-        
+        Интеллектуальный выбор наилучшего временного кадра для миниатюры
+
+        Стратегия:
+        1. Сначала попытаться извлечь обложку видео (если существует)
+        2. Если видео очень короткое (<30 секунд), выбрать середину
+        3. Если видео средней длины (30 секунд - 5 минут), выбрать позицию на 10%
+        4. Если видео длинное (>5 минут), выбрать позицию на 5%
+        5. Избегать выбора начала и конца, так как в этих местах обычно черный экран или переходные эффекты
+
         Args:
-            video_path: 视频文件路径
-            
+            video_path: Путь к видеофайлу
+
         Returns:
-            最佳时间点（秒）
+            Оптимальное время в секундах
         """
         try:
             # 首先尝试提取视频封面
             cover_path = self._extract_video_cover(video_path)
             if cover_path:
-                logger.info(f"使用视频封面作为缩略图: {cover_path}")
+                logger.info(f"Использовать обложку видео в качестве миниатюры: {cover_path}")
                 # 如果成功提取封面，返回一个特殊值表示使用封面
                 return -1.0  # 特殊值，表示使用封面
             

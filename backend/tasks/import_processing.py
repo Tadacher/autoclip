@@ -28,7 +28,7 @@ def process_import_task(self, project_id: str, video_path: str, srt_file_path: O
         srt_file_path: 字幕文件路径（可选）
     """
     try:
-        logger.info(f"开始处理导入任务: {project_id}")
+        logger.info(f"Начало обработки задачи импорта: {project_id}")
         
         # 获取数据库会话
         db = next(get_db())
@@ -38,12 +38,12 @@ def process_import_task(self, project_id: str, video_path: str, srt_file_path: O
         self.update_state(state='PROGRESS', meta={'progress': 10, 'message': '开始处理...'})
         
         # 1. 检查并生成缩略图（如果还没有）
-        logger.info(f"检查项目 {project_id} 缩略图...")
+        logger.info(f"Проверка проекта {project_id} Превью...")
         self.update_state(state='PROGRESS', meta={'progress': 20, 'message': '检查缩略图...'})
         
         project = project_service.get(project_id)
         if project and not project.thumbnail:
-            logger.info(f"项目 {project_id} 没有缩略图，开始生成...")
+            logger.info(f"У проекта {project_id} нет миниатюры, начинается генерация...")
             self.update_state(state='PROGRESS', meta={'progress': 25, 'message': '生成缩略图...'})
             
             try:
