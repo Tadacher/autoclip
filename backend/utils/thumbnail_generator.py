@@ -103,14 +103,14 @@ class ThumbnailGenerator:
                 logger.info(f"缩略图生成成功: {output_path}")
                 return output_path
             else:
-                logger.error(f"缩略图生成失败: {result.stderr}")
+                logger.error(f"Ошибка создания эскиза: {result.stderr}")
                 return None
                 
         except subprocess.TimeoutExpired:
-            logger.error(f"缩略图生成超时: {video_path}")
+            logger.error(f"Время создания миниатюры истекло: {video_path}")
             return None
         except Exception as e:
-            logger.error(f"缩略图生成异常: {e}")
+            logger.error(f"Сбой создания миниатюры: {e}")
             return None
     
     def _extract_video_cover(self, video_path: Path) -> Optional[Path]:
