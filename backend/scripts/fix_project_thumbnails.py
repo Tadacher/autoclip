@@ -94,7 +94,7 @@ def fix_file_import_thumbnail(project, db):
     try:
         video_path = Path(project.video_path)
         if not video_path.exists():
-            print(f"⚠️  не может найти видеофайл по указанному пути: {video_path}")
+            print(f"⚠️ (fix_file_import_thumbnail) не может найти видеофайл по указанному пути: {video_path}")
             return False
         
         # Генерация эскизов
