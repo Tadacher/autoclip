@@ -241,7 +241,8 @@ class SpeechRecognizer:
         """检查本地Whisper是否可用"""
         try:
             result = subprocess.run(['whisper', '--help'], 
-                                  capture_output=True, text=True, timeout=20)
+                                  capture_output=True, text=True, timeout=300)
+            logger.warning(result)
             return result.returncode == 0
         except (subprocess.TimeoutExpired, FileNotFoundError):
             logger.warning("Локальный Whisper не установлен или недоступен")
