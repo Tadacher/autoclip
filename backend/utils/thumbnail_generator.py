@@ -52,7 +52,7 @@ class ThumbnailGenerator:
             # 智能选择时间点
             if time_offset is None:
                 time_offset = self._get_optimal_thumbnail_time(video_path)
-            
+                logger.info("time_offset = self._get_optimal_thumbnail_time(video_path)")
             # 检查是否使用视频封面
             if time_offset == -1.0:
                 # 使用视频封面
@@ -67,7 +67,7 @@ class ThumbnailGenerator:
                         '-y',
                         str(output_path)
                     ]
-                    logger.info(f"使用视频封面生成缩略图: {cover_path} -> {output_path}")
+                    logger.info(f"Создать миниатюру из обложки видео: {cover_path} -> {output_path}")
                 else:
                     # 封面不存在，回退到默认时间点
                     time_offset = 1.0
@@ -81,7 +81,7 @@ class ThumbnailGenerator:
                         '-y',
                         str(output_path)
                     ]
-                    logger.info(f"封面不存在，回退到默认时间点: {time_offset}秒")
+                    logger.info(f"Обложка отсутствует, используется кадр из стандартной временной точки: {time_offset}秒")
             else:
                 # 使用指定时间点
                 logger.info(f"为视频 {video_path.name} 选择缩略图时间点: {time_offset}秒")
